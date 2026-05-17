@@ -471,7 +471,7 @@ Validation examples:
 * Email must be valid.
 * Password must meet the minimum length.
 * Branch name is required.
-* Branch slug must be unique per user or globally.
+* Branch slug must be unique globally.
 * Subbranch name is required.
 * Color Token name is required.
 * Color Token value must be a valid hexadecimal color.
