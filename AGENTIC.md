@@ -13,6 +13,11 @@ As a result, ChatGPT suggested the Color Token Manager idea, which I agreed with
 ### Process
 I started asking for help in explaining how to write a good User Story file. I already knew about them, but never wrote one before, so I asked ChatGPT to help me in the structure. The same for the ARCHITECTURE.md and Conventional committing. I used to write simple messages like "fixed vercel adapter version", without the type.
 
+### The dark side of the moon
+I started developing the backend first, using Node.js and Express with Prisma for the database.
+
+As my expertise is not backend exactly, I needed ChatGPT to help me with the implementation. So I start by implementing the server functionality with Express and Prisma. Asking the why of the things I was not sure about, and ChatGPT helped me understand the best approach.
+
 ## 3. Key Prompts
 
 
