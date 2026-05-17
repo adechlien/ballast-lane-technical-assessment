@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  branches     Branch[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Branch {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  mood        String?
+  isPublic    Boolean     @default(false)
+  ownerId     String
+  owner       User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  subbranches Subbranch[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Subbranch {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  branchId    String
+  branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  colorTokens ColorToken[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([branchId, slug])
+}
+
+model ColorToken {
+  id          String    @id @default(cuid())
+  name        String
+  value       String
+  usage       String?
+  subbranchId String
+  subbranch   Subbranch @relation(fields: [subbranchId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([subbranchId, name])
+}
