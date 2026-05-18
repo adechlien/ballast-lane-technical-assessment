@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@adech/themes": "^0.2.0",
+    "@tabler/icons-react": "^3.44.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.1"
