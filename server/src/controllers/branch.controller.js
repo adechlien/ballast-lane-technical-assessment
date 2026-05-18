@@ -2,6 +2,8 @@ import {
   createMyBranch,
   deleteMyBranch,
   getMyBranches,
+  getPublicBranchBySlug,
+  getPublicBranches,
   publishMyBranch,
   unpublishMyBranch,
   updateMyBranch,
@@ -90,6 +92,32 @@ export async function publishBranch(req, res, next) {
 export async function unpublishBranch(req, res, next) {
   try {
     const branch = await unpublishMyBranch(req.user.id, req.params.id);
+
+    return res.status(200).json({
+      branch,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function listPublicBranches(req, res, next) {
+  try {
+    const branches = await getPublicBranches({
+      search: req.query.search,
+    });
+
+    return res.status(200).json({
+      branches,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getPublicBranch(req, res, next) {
+  try {
+    const branch = await getPublicBranchBySlug(req.params.slug);
 
     return res.status(200).json({
       branch,

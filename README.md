@@ -385,3 +385,41 @@ The tests cover:
 - Color Token creation.
 - Color Token validation.
 - Duplicate Color Token names inside the same Subbranch.
+
+## Public Branch Endpoints
+
+These endpoints do not require authentication.
+
+Available endpoints:
+
+GET /api/branches
+GET /api/branches/:slug
+
+### List Public Branches
+
+Returns all public Branches.
+
+Endpoint:
+
+GET /api/branches
+
+Optional search query:
+
+GET /api/branches?search=Superior
+
+### Get Public Branch by Slug
+
+Returns a public Branch by its slug.
+
+Endpoint:
+
+GET /api/branches/:slug
+
+Example:
+
+GET /api/branches/superior
+
+### Public Branch Business Rules
+
+* Visitors can only see Branches where `isPublic` is true.
+* Private Branches are not returned by public endpoints.

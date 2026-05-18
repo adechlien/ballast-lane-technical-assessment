@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes.js";
 import branchRoutes from "./routes/branch.routes.js";
 import subbranchRoutes from "./routes/subbranch.routes.js";
 import colorTokenRoutes from "./routes/colorToken.routes.js";
+import publicBranchRoutes from "./routes/publicBranch.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -24,6 +25,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/branches", publicBranchRoutes);
 app.use("/api/me/branches", branchRoutes);
 app.use("/api/me/", subbranchRoutes);
 app.use("/api/me/", colorTokenRoutes);

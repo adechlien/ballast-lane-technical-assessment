@@ -77,3 +77,70 @@ export async function deleteBranch(id) {
     },
   });
 }
+
+export async function findPublicBranches({ search } = {}) {
+  return prisma.branch.findMany({
+    where: {
+      isPublic: true,
+      ...(search
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: search,
+                },
+              },
+              {
+                description: {
+                  contains: search,
+                },
+              },
+              {
+                mood: {
+                  contains: search,
+                },
+              },
+            ],
+          }
+        : {}),
+    },
+    include: {
+      owner: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      subbranches: {
+        include: {
+          colorTokens: true,
+        },
+      },
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+}
+
+export async function findPublicBranchBySlug(slug) {
+  return prisma.branch.findFirst({
+    where: {
+      slug,
+      isPublic: true,
+    },
+    include: {
+      owner: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      subbranches: {
+        include: {
+          colorTokens: true,
+        },
+      },
+    },
+  });
+}

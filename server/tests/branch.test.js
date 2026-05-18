@@ -99,4 +99,102 @@ describe("Branch endpoints", () => {
 
     expect(updateResponse.status).toBe(403);
   });
+
+  it("lists only public Branches without authentication", async () => {
+    const token = await registerAndGetToken();
+
+    const publicBranchResponse = await request(app)
+      .post("/api/me/branches")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Superior",
+        description: "Main theme in Adech Themes.",
+        mood: "Cold, calm, introspective",
+      });
+
+    const privateBranchResponse = await request(app)
+      .post("/api/me/branches")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Hidden Branch",
+        description: "Private branch.",
+        mood: "Private",
+      });
+
+    const branchId = publicBranchResponse.body.branch.id;
+
+    await request(app)
+      .post(`/api/me/branches/${branchId}/subbranches`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Boulevard",
+        description:
+          "The city, distance, and the quiet loneliness that can exist even in a crowded world.",
+      });
+
+    await request(app)
+      .patch(`/api/me/branches/${branchId}/publish`)
+      .set("Authorization", `Bearer ${token}`);
+
+    const response = await request(app).get("/api/branches");
+
+    expect(response.status).toBe(200);
+    expect(response.body.branches).toHaveLength(1);
+    expect(response.body.branches[0].name).toBe("Superior");
+    expect(response.body.branches[0].name).not.toBe(
+      privateBranchResponse.body.branch.name
+    );
+  });
+
+  it("returns a public Branch by slug without authentication", async () => {
+    const token = await registerAndGetToken();
+
+    const branchResponse = await request(app)
+      .post("/api/me/branches")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Superior",
+        description: "Main theme in Adech Themes.",
+        mood: "Cold, calm, introspective",
+      });
+
+    const branchId = branchResponse.body.branch.id;
+
+    await request(app)
+      .post(`/api/me/branches/${branchId}/subbranches`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Boulevard",
+        description:
+          "The city, distance, and the quiet loneliness that can exist even in a crowded world.",
+      });
+
+    await request(app)
+      .patch(`/api/me/branches/${branchId}/publish`)
+      .set("Authorization", `Bearer ${token}`);
+
+    const response = await request(app).get("/api/branches/superior");
+
+    expect(response.status).toBe(200);
+    expect(response.body.branch.name).toBe("Superior");
+    expect(response.body.branch.isPublic).toBe(true);
+  });
+
+  it("does not return private Branches by slug", async () => {
+    const token = await registerAndGetToken();
+
+    await request(app)
+      .post("/api/me/branches")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Private Branch",
+        description: "This should not be public.",
+        mood: "Hidden",
+      });
+
+    const response = await request(app).get("/api/branches/private-branch");
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Public Branch not found.");
+  });
 });

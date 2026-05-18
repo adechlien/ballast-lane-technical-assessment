@@ -4,6 +4,8 @@ import {
   findBranchById,
   findBranchesByOwnerId,
   findBranchBySlug,
+  findPublicBranchBySlug,
+  findPublicBranches,
   updateBranch,
 } from "../repositories/branch.repository.js";
 import { slugify } from "../utils/slugify.js";
@@ -131,4 +133,22 @@ export async function unpublishMyBranch(userId, branchId) {
   return updateBranch(branchId, {
     isPublic: false,
   });
+}
+
+export async function getPublicBranches({ search } = {}) {
+  return findPublicBranches({
+    search: search?.trim() || undefined,
+  });
+}
+
+export async function getPublicBranchBySlug(slug) {
+  const branch = await findPublicBranchBySlug(slug);
+
+  if (!branch) {
+    const error = new Error("Public Branch not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return branch;
 }
