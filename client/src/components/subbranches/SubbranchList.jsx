@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ColorTokenList from "../tokens/ColorTokenList";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
 import SubbranchForm from "./SubbranchForm";
@@ -8,6 +9,9 @@ export default function SubbranchList({
   onCreate,
   onUpdate,
   onDelete,
+  onCreateColorToken,
+  onUpdateColorToken,
+  onDeleteColorToken,
   isBusy = false,
 }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -122,6 +126,14 @@ export default function SubbranchList({
                   </Button>
                 </div>
               </div>
+
+              <ColorTokenList
+                subbranch={subbranch}
+                isBusy={isBusy}
+                onCreate={onCreateColorToken}
+                onUpdate={onUpdateColorToken}
+                onDelete={onDeleteColorToken}
+              />
             </div>
           ))}
         </div>

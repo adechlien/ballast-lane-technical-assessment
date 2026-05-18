@@ -1,6 +1,6 @@
+import SubbranchList from "../subbranches/SubbranchList";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
-import SubbranchList from "../subbranches/SubbranchList";
 
 export default function DashboardBranchCard({
   branch,
@@ -10,6 +10,9 @@ export default function DashboardBranchCard({
   onCreateSubbranch,
   onUpdateSubbranch,
   onDeleteSubbranch,
+  onCreateColorToken,
+  onUpdateColorToken,
+  onDeleteColorToken,
   isBusy = false,
 }) {
   const subbranches = branch.subbranches || [];
@@ -88,6 +91,9 @@ export default function DashboardBranchCard({
         onCreate={onCreateSubbranch}
         onUpdate={onUpdateSubbranch}
         onDelete={onDeleteSubbranch}
+        onCreateColorToken={onCreateColorToken}
+        onUpdateColorToken={onUpdateColorToken}
+        onDeleteColorToken={onDeleteColorToken}
       />
     </Card>
   );

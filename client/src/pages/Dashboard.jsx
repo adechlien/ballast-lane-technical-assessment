@@ -18,6 +18,11 @@ import {
   deleteSubbranch,
   updateSubbranch,
 } from "../services/subbranchService";
+import {
+  createColorToken,
+  deleteColorToken,
+  updateColorToken,
+} from "../services/colorTokenService";
 
 export default function Dashboard() {
   const { token, user } = useAuth();
@@ -245,6 +250,105 @@ export default function Dashboard() {
     }
   }
 
+  async function handleCreateColorToken(subbranchId, payload) {
+    try {
+      setActionStatus("loading");
+      setError("");
+
+      const data = await createColorToken(token, subbranchId, payload);
+
+      setBranches((current) =>
+        current.map((branch) => ({
+          ...branch,
+          subbranches: (branch.subbranches || []).map((subbranch) =>
+            subbranch.id === subbranchId
+              ? {
+                  ...subbranch,
+                  colorTokens: [
+                    ...(subbranch.colorTokens || []),
+                    data.colorToken,
+                  ],
+                }
+              : subbranch
+          ),
+        }))
+      );
+
+      setActionStatus("idle");
+    } catch (err) {
+      setError(err.message);
+      setActionStatus("idle");
+    }
+  }
+
+  async function handleUpdateColorToken(subbranchId, tokenId, payload) {
+    try {
+      setActionStatus("loading");
+      setError("");
+
+      const data = await updateColorToken(token, subbranchId, tokenId, payload);
+
+      setBranches((current) =>
+        current.map((branch) => ({
+          ...branch,
+          subbranches: (branch.subbranches || []).map((subbranch) =>
+            subbranch.id === subbranchId
+              ? {
+                  ...subbranch,
+                  colorTokens: (subbranch.colorTokens || []).map((colorToken) =>
+                    colorToken.id === tokenId ? data.colorToken : colorToken
+                  ),
+                }
+              : subbranch
+          ),
+        }))
+      );
+
+      setActionStatus("idle");
+    } catch (err) {
+      setError(err.message);
+      setActionStatus("idle");
+    }
+  }
+
+  async function handleDeleteColorToken(subbranchId, tokenId) {
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this Color Token?"
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    try {
+      setActionStatus("loading");
+      setError("");
+
+      await deleteColorToken(token, subbranchId, tokenId);
+
+      setBranches((current) =>
+        current.map((branch) => ({
+          ...branch,
+          subbranches: (branch.subbranches || []).map((subbranch) =>
+            subbranch.id === subbranchId
+              ? {
+                  ...subbranch,
+                  colorTokens: (subbranch.colorTokens || []).filter(
+                    (colorToken) => colorToken.id !== tokenId
+                  ),
+                }
+              : subbranch
+          ),
+        }))
+      );
+
+      setActionStatus("idle");
+    } catch (err) {
+      setError(err.message);
+      setActionStatus("idle");
+    }
+  }
+
   return (
     <div>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -346,6 +450,9 @@ export default function Dashboard() {
               onCreateSubbranch={handleCreateSubbranch}
               onUpdateSubbranch={handleUpdateSubbranch}
               onDeleteSubbranch={handleDeleteSubbranch}
+              onCreateColorToken={handleCreateColorToken}
+              onUpdateColorToken={handleUpdateColorToken}
+              onDeleteColorToken={handleDeleteColorToken}
             />
           ))}
         </div>
