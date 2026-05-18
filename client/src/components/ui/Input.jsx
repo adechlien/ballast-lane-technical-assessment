@@ -9,7 +9,7 @@ export default function Input({ label, error, className = "", ...props }) {
 
       <input
         className={[
-          "w-full rounded-xl border border-adech-border bg-adech-bg-deep/70 px-3 py-2 text-sm text-adech-text outline-none placeholder:text-adech-text-muted focus:border-adech-accent",
+          "w-full rounded-lg bg-adech-swamp-3 px-3 py-2 text-sm text-adech-text outline-none placeholder:text-adech-text-muted focus:border-adech-accent",
           className,
         ].join(" ")}
         {...props}

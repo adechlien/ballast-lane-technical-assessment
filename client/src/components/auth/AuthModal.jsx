@@ -54,38 +54,21 @@ export default function AuthModal({ mode, onClose, onModeChange }) {
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-adech-bg-ink/80 px-4 backdrop-blur">
-      <button
-        type="button"
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-label="Close authentication modal"
-      />
+      <button type="button" className="absolute inset-0 cursor-default" onClick={onClose} aria-label="Close authentication modal"/>
 
       <Card className="relative w-full max-w-md p-6">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-adech-text-soft">
-              {isRegister ? "Create account" : "Welcome back"}
-            </p>
-
-            <h2 className="mt-2 text-2xl font-semibold text-adech-text">
+            <h2 className="text-2xl font-semibold text-adech-text">
               {isRegister ? "Sign up" : "Login"}
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-adech-text-muted">
+            <p className="text-sm leading-6 text-adech-text-muted">
               {isRegister
-                ? "Start creating your own Adech-inspired Branches."
+                ? "Create an account and start creating your own Branches!"
                 : "Access your Branches, Subbranches, and Color Tokens."}
             </p>
           </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl border border-adech-border px-3 py-1 text-sm text-adech-text-muted hover:bg-adech-surface hover:text-adech-text"
-          >
-            Close
-          </button>
         </div>
 
         {error && (
@@ -131,11 +114,11 @@ export default function AuthModal({ mode, onClose, onModeChange }) {
           </Button>
         </form>
 
-        <p className="mt-5 text-sm text-adech-text-muted">
+        <p className="mt-4 text-sm text-adech-text-muted text-center">
           {isRegister ? "Already have an account?" : "Don’t have an account?"}{" "}
           <button
             type="button"
-            className="text-adech-text-soft hover:text-adech-accent"
+            className="text-adech-text-soft hover:text-adech-accent cursor-pointer"
             onClick={() => onModeChange(isRegister ? "login" : "register")}
           >
             {isRegister ? "Login" : "Sign up"}
