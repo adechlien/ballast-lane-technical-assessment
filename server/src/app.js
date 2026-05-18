@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import branchRoutes from "./routes/branch.routes.js";
+import subbranchRoutes from "./routes/subbranch.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -23,7 +24,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/me/branches", branchRoutes);
-
+app.use("/api/me/", subbranchRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

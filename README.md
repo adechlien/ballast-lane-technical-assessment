@@ -245,3 +245,58 @@ PATCH /api/me/branches/:id/unpublish
 * Only authenticated users can create Branches.
 * Only the owner of a Branch can edit, delete, publish, or unpublish it.
 * A Branch cannot be published unless it has at least one Subbranch.
+
+## Subbranch Endpoints
+
+These endpoints require a Bearer token:
+
+Authorization: Bearer <token>
+
+Available endpoints:
+
+POST /api/me/branches/:branchId/subbranches
+PATCH /api/me/branches/:branchId/subbranches/:subbranchId
+DELETE /api/me/branches/:branchId/subbranches/:subbranchId
+
+### Create Subbranch
+
+Creates a new Subbranch inside an owned Branch.
+
+Endpoint:
+
+POST /api/me/branches/:branchId/subbranches
+
+Example request body:
+
+{
+  "name": "Boulevard",
+  "description": "The city, distance, and the quiet loneliness that can exist even in a crowded world."
+}
+
+### Update Subbranch
+
+Updates a Subbranch inside an owned Branch.
+
+Endpoint:
+
+PATCH /api/me/branches/:branchId/subbranches/:subbranchId
+
+Example request body:
+
+{
+  "description": "The city, distance, and quiet urban loneliness inside the Superior Branch."
+}
+
+### Delete Subbranch
+
+Deletes a Subbranch inside an owned Branch.
+
+Endpoint:
+
+DELETE /api/me/branches/:branchId/subbranches/:subbranchId
+
+### Subbranch Business Rules
+
+- Only the owner of a Branch can create Subbranches inside it.
+- Only the owner of a Branch can edit or delete its Subbranches.
+- A Subbranch slug must be unique inside its parent Branch.
