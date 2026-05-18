@@ -3,10 +3,8 @@ import AppLayout from "./components/layout/AppLayout";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import PublicBranches from "./pages/PublicBranches";
 import PublicBranchDetail from "./pages/PublicBranchDetail";
-import Register from "./pages/Register";
+import PublicBranches from "./pages/PublicBranches";
 
 const router = createBrowserRouter([
   {
@@ -22,12 +20,8 @@ const router = createBrowserRouter([
         element: <PublicBranches />,
       },
       {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "register",
-        element: <Register />,
+        path: "branches/:slug",
+        element: <PublicBranchDetail />,
       },
       {
         element: <ProtectedRoute />,
@@ -37,10 +31,6 @@ const router = createBrowserRouter([
             element: <Dashboard />,
           },
         ],
-      },
-      {
-        path: "branches/:slug",
-        element: <PublicBranchDetail />,
       },
     ],
   },

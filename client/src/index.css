@@ -37,16 +37,17 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100%;
   color: var(--adech-venomous-3);
   background:
     radial-gradient(circle at top left, color-mix(in srgb, var(--adech-boulevard-1) 18%, transparent), transparent 28rem),
     radial-gradient(circle at top right, color-mix(in srgb, var(--adech-venomous-1) 12%, transparent), transparent 30rem),
     linear-gradient(135deg, var(--adech-swamp-1), var(--adech-swamp-2) 52%, var(--adech-swamp-3));
+  overflow: hidden;
 }
 
 #root {
-  min-height: 100vh;
+    min-height: 100%;
 }
 
 button,
