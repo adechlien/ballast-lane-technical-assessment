@@ -300,3 +300,59 @@ DELETE /api/me/branches/:branchId/subbranches/:subbranchId
 - Only the owner of a Branch can create Subbranches inside it.
 - Only the owner of a Branch can edit or delete its Subbranches.
 - A Subbranch slug must be unique inside its parent Branch.
+
+## Color Token Endpoints
+
+These endpoints require a Bearer token:
+
+Authorization: Bearer <token>
+
+Available endpoints:
+
+POST /api/me/subbranches/:subbranchId/tokens
+PATCH /api/me/subbranches/:subbranchId/tokens/:tokenId
+DELETE /api/me/subbranches/:subbranchId/tokens/:tokenId
+
+### Create Color Token
+
+Creates a new Color Token inside a Subbranch that belongs to an owned Branch.
+
+Endpoint:
+
+POST /api/me/subbranches/:subbranchId/tokens
+
+Example request body:
+
+{
+"name": "adech-boulevard-1",
+"value": "#C7DCFF",
+"usage": "Used for soft backgrounds and calm interface surfaces."
+}
+
+### Update Color Token
+
+Updates a Color Token inside a Subbranch that belongs to an owned Branch.
+
+Endpoint:
+
+PATCH /api/me/subbranches/:subbranchId/tokens/:tokenId
+
+Example request body:
+
+{
+"usage": "Used for primary calm backgrounds in Boulevard interfaces."
+}
+
+### Delete Color Token
+
+Deletes a Color Token inside a Subbranch that belongs to an owned Branch.
+
+Endpoint:
+
+DELETE /api/me/subbranches/:subbranchId/tokens/:tokenId
+
+### Color Token Business Rules
+
+* Only the owner of the parent Branch can create, edit, or delete Color Tokens.
+* Color Token values must be valid hexadecimal colors.
+* Color Token names must be unique inside the same Subbranch.
