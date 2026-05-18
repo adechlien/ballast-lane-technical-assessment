@@ -47,27 +47,17 @@ export default function PublicBranches() {
   }
 
   return (
-    <div>
-      <div className="mb-8 grid gap-5 lg:grid-cols-[1fr_22rem] lg:items-end">
-        <div>
-          <p className="text-sm text-adech-text-soft">Explore</p>
-
-          <h1 className="mt-2 text-3xl font-semibold text-adech-text">
-            Public Branches
-          </h1>
-
-          <p className="mt-3 max-w-2xl text-adech-text-muted">
-            Browse public visual systems created with Branches, Subbranches, and
-            reusable Color Tokens.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search public Branches..."
-          />
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col items-start gap-2">
+        <h1 className="text-3xl font-semibold text-adech-text">
+          Public Branches
+        </h1>
+        <p className="max-w-2xl text-adech-text-muted">
+          Browse public visual systems created with Branches, Subbranches, and
+          reusable Color Tokens.
+        </p>
+        <form onSubmit={handleSubmit} className="mt-2">
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search public Branches..."/>
         </form>
       </div>
 

@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import AuthModal from "../auth/AuthModal";
 import Button from "../ui/Button";
-import { IconHome2, IconSearch, IconLogout2, IconLogin2, IconLayoutDashboard, IconUserPlus } from '@tabler/icons-react';
+import { IconHome2, IconSearch, IconLogout2, IconLogin2, IconLayoutDashboard, IconUserPlus, IconLayoutSidebar } from '@tabler/icons-react';
 
 export default function AppLayout() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -19,15 +19,23 @@ export default function AppLayout() {
     <div className="h-screen w-screen overflow-hidden bg-adech-bg text-adech-text">
       <div className="grid h-full w-full md:grid-cols-[16rem_1fr]">
         <aside className="flex h-full flex-col bg-adech-bg-ink p-4">
-          <div className="mb-10 flex items-center gap-3">
-            <img src="/adech-logo.svg" alt="Adechen Logo" className="size-8" />
+          <div className="mb-10 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <img src="/adech-logo.svg" alt="Adechen Logo" className="size-8" />
 
             <div>
               <p className="text-sm font-semibold text-adech-text">Adechen</p>
               <p className="text-xs text-adech-text-muted">
                 Adech Themes Manager
               </p>
+              </div>
             </div>
+
+            {/* <Button variant="ghost" className="size-8">*/}
+            <button className="text-lg">
+              <IconLayoutSidebar />
+            </button>
+            {/* </Button>*/}
           </div>
 
           <nav className="grid gap-2">
