@@ -431,3 +431,35 @@ GET /api/branches/superior
 
 * Visitors can only see Branches where `isPublic` is true.
 * Private Branches are not returned by public endpoints.
+
+## Frontend
+
+The frontend uses React, Vite, Tailwind CSS, React Router, and Adech Themes Superior.
+
+### Setup
+
+Go to the client folder:
+
+```bash
+cd client
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file in the client folder based on the `.env.example` file:
+
+```bash
+cp .env.example .env
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```

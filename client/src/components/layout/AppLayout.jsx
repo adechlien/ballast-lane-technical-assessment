@@ -1,13 +1,16 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-
-const navItems = [
-  { to: "/", label: "Home" },
-  { to: "/branches", label: "Explore" },
-  { to: "/login", label: "Login" },
-  { to: "/register", label: "Register" },
-];
+import { useAuth } from "../../context/AuthContext";
+import Button from "../ui/Button";
 
 export default function AppLayout() {
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const navItems = [
+    { to: "/", label: "Home" },
+    { to: "/branches", label: "Explore" },
+    ...(isAuthenticated ? [{ to: "/dashboard", label: "Dashboard" }] : []),
+  ];
+
   return (
     <div className="min-h-screen bg-adech-bg text-adech-text">
       <header className="border-b border-adech-border bg-adech-bg-ink/80 backdrop-blur">
@@ -27,24 +30,46 @@ export default function AppLayout() {
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-2 md:flex">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  [
-                    "rounded-xl px-3 py-2 text-sm transition",
-                    isActive
-                      ? "bg-adech-surface text-adech-text-soft"
-                      : "text-adech-text-muted hover:bg-adech-surface/60 hover:text-adech-text",
-                  ].join(" ")
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+          <div className="hidden items-center gap-3 md:flex">
+            <nav className="flex items-center gap-2">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    [
+                      "rounded-xl px-3 py-2 text-sm transition",
+                      isActive
+                        ? "bg-adech-surface text-adech-text-soft"
+                        : "text-adech-text-muted hover:bg-adech-surface/60 hover:text-adech-text",
+                    ].join(" ")
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-adech-text-muted">
+                  {user?.name}
+                </span>
+                <Button variant="secondary" onClick={logout}>
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login">
+                  <Button variant="ghost">Login</Button>
+                </Link>
+                <Link to="/register">
+                  <Button>Create account</Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
