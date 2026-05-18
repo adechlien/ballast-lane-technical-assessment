@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import BranchForm from "../components/branches/BranchForm";
+import BranchModal from "../components/branches/BranchModal";
 import DashboardBranchCard from "../components/branches/DashboardBranchCard";
 import DashboardBranchRow from "../components/dashboard/DashboardBranchRow";
 import Button from "../components/ui/Button";
@@ -24,6 +24,8 @@ import {
   deleteColorToken,
   updateColorToken,
 } from "../services/colorTokenService";
+import { IconTrash, IconCirclePlus } from '@tabler/icons-react';
+import ConfirmModal from "../components/ui/ConfirmModal";
 
 export default function Dashboard() {
   const { token, user } = useAuth();
@@ -34,6 +36,7 @@ export default function Dashboard() {
   const [status, setStatus] = useState("loading");
   const [actionStatus, setActionStatus] = useState("idle");
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   async function loadBranches() {
     try {
@@ -140,34 +143,11 @@ export default function Dashboard() {
     }
   }
 
-  async function handleDeleteBranch(branchId) {
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this Branch?"
-    );
-
-    if (!shouldDelete) return;
-
-    try {
-      setActionStatus("loading");
-      setError("");
-
-      await deleteBranch(token, branchId);
-
-      setBranches((current) => {
-        const nextBranches = current.filter((branch) => branch.id !== branchId);
-
-        if (selectedBranchId === branchId) {
-          setSelectedBranchId(nextBranches[0]?.id || null);
-        }
-
-        return nextBranches;
-      });
-
-      setActionStatus("idle");
-    } catch (err) {
-      setError(err.message);
-      setActionStatus("idle");
-    }
+  function handleDeleteBranch(branchId) {
+    setDeleteTarget({
+      type: "branch",
+      branchId,
+    });
   }
 
   async function handleCreateSubbranch(branchId, payload) {
@@ -222,37 +202,12 @@ export default function Dashboard() {
     }
   }
 
-  async function handleDeleteSubbranch(branchId, subbranchId) {
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this Subbranch?"
-    );
-
-    if (!shouldDelete) return;
-
-    try {
-      setActionStatus("loading");
-      setError("");
-
-      await deleteSubbranch(token, branchId, subbranchId);
-
-      setBranches((current) =>
-        current.map((branch) =>
-          branch.id === branchId
-            ? {
-                ...branch,
-                subbranches: (branch.subbranches || []).filter(
-                  (subbranch) => subbranch.id !== subbranchId
-                ),
-              }
-            : branch
-        )
-      );
-
-      setActionStatus("idle");
-    } catch (err) {
-      setError(err.message);
-      setActionStatus("idle");
-    }
+  function handleDeleteSubbranch(branchId, subbranchId) {
+    setDeleteTarget({
+      type: "subbranch",
+      branchId,
+      subbranchId,
+    });
   }
 
   async function handleCreateColorToken(subbranchId, payload) {
@@ -316,50 +271,132 @@ export default function Dashboard() {
     }
   }
 
-  async function handleDeleteColorToken(subbranchId, tokenId) {
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this Color Token?"
-    );
+  function handleDeleteColorToken(subbranchId, tokenId) {
+    setDeleteTarget({
+      type: "colorToken",
+      subbranchId,
+      tokenId,
+    });
+  }
 
-    if (!shouldDelete) return;
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
 
     try {
       setActionStatus("loading");
       setError("");
 
-      await deleteColorToken(token, subbranchId, tokenId);
+      if (deleteTarget.type === "branch") {
+        await deleteBranch(token, deleteTarget.branchId);
 
-      setBranches((current) =>
-        current.map((branch) => ({
-          ...branch,
-          subbranches: (branch.subbranches || []).map((subbranch) =>
-            subbranch.id === subbranchId
+        setBranches((current) => {
+          const nextBranches = current.filter(
+            (branch) => branch.id !== deleteTarget.branchId
+          );
+
+          if (selectedBranchId === deleteTarget.branchId) {
+            setSelectedBranchId(nextBranches[0]?.id || null);
+          }
+
+          return nextBranches;
+        });
+      }
+
+      if (deleteTarget.type === "subbranch") {
+        await deleteSubbranch(
+          token,
+          deleteTarget.branchId,
+          deleteTarget.subbranchId
+        );
+
+        setBranches((current) =>
+          current.map((branch) =>
+            branch.id === deleteTarget.branchId
               ? {
-                  ...subbranch,
-                  colorTokens: (subbranch.colorTokens || []).filter(
-                    (colorToken) => colorToken.id !== tokenId
+                  ...branch,
+                  subbranches: (branch.subbranches || []).filter(
+                    (subbranch) => subbranch.id !== deleteTarget.subbranchId
                   ),
                 }
-              : subbranch
-          ),
-        }))
-      );
+              : branch
+          )
+        );
+      }
 
+      if (deleteTarget.type === "colorToken") {
+        await deleteColorToken(
+          token,
+          deleteTarget.subbranchId,
+          deleteTarget.tokenId
+        );
+
+        setBranches((current) =>
+          current.map((branch) => ({
+            ...branch,
+            subbranches: (branch.subbranches || []).map((subbranch) =>
+              subbranch.id === deleteTarget.subbranchId
+                ? {
+                    ...subbranch,
+                    colorTokens: (subbranch.colorTokens || []).filter(
+                      (colorToken) => colorToken.id !== deleteTarget.tokenId
+                    ),
+                  }
+                : subbranch
+            ),
+          }))
+        );
+      }
+
+      setDeleteTarget(null);
       setActionStatus("idle");
     } catch (err) {
       setError(err.message);
       setActionStatus("idle");
+      setDeleteTarget(null);
     }
   }
+
+  function getDeleteModalContent() {
+    if (!deleteTarget) return null;
+
+    if (deleteTarget.type === "branch") {
+      return {
+        title: "Delete Branch?",
+        message:
+          "This will permanently delete the Branch and all its Subbranches and Color Tokens. This action cannot be undone.",
+        confirmLabel: "Delete Branch",
+      };
+    }
+
+    if (deleteTarget.type === "subbranch") {
+      return {
+        title: "Delete Subbranch?",
+        message:
+          "This will permanently delete the Subbranch and all Color Tokens inside it. This action cannot be undone.",
+        confirmLabel: "Delete Subbranch",
+      };
+    }
+
+    if (deleteTarget.type === "colorToken") {
+      return {
+        title: "Delete Color Token?",
+        message:
+          "This will permanently delete this Color Token from the Subbranch. This action cannot be undone.",
+        confirmLabel: "Delete Token",
+      };
+    }
+
+    return null;
+  }
+
+  const deleteModalContent = getDeleteModalContent();
 
   return (
     <div>
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-adech-text-soft">Dashboard</p>
-
           <h1 className="mt-2 text-3xl font-semibold text-adech-text">
-            Resumen
+            Dashboard
           </h1>
 
           <p className="mt-2 text-sm text-adech-text-muted">
@@ -367,45 +404,37 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <Button onClick={() => setShowForm((current) => !current)}>
-          {showForm ? "Close form" : "+ New Branch"}
+        <Button onClick={() => setShowForm(true)}>
+          <span className="flex items-center gap-2">
+            <IconCirclePlus size={18} stroke={2} />
+            New Branch
+          </span>
         </Button>
       </div>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.label} className="p-5">
+          <Card key={stat.label} className="p-4 flex justify-between items-center">
             <p className="text-sm text-adech-text-muted">{stat.label}</p>
-            <p className="mt-2 text-3xl font-semibold text-adech-text">
+            <p className="text-2xl font-semibold text-adech-text">
               {stat.value}
             </p>
           </Card>
         ))}
       </div>
 
+      {showForm && (
+        <BranchModal
+          onClose={() => setShowForm(false)}
+          onSubmit={handleCreateBranch}
+          isSubmitting={actionStatus === "loading"}
+        />
+      )}
+
       {error && (
         <div className="mb-6">
           <ErrorMessage message={error} />
         </div>
-      )}
-
-      {showForm && (
-        <Card className="mb-6 p-6">
-          <div className="mb-5">
-            <h2 className="text-lg font-semibold text-adech-text">
-              Create Branch
-            </h2>
-            <p className="mt-2 text-sm text-adech-text-muted">
-              Start with a Branch. Later you can add Subbranches and Color
-              Tokens inside it.
-            </p>
-          </div>
-
-          <BranchForm
-            onSubmit={handleCreateBranch}
-            isSubmitting={actionStatus === "loading"}
-          />
-        </Card>
       )}
 
       {status === "loading" && (
@@ -431,14 +460,9 @@ export default function Dashboard() {
       {status === "success" && branches.length > 0 && (
         <div className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
           <section>
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-adech-text">
+              <h2 className="mb-2 text-lg font-semibold text-adech-text">
                 My Branches
               </h2>
-              <p className="mt-1 text-sm text-adech-text-muted">
-                Select one to manage its Subbranches and Color Tokens.
-              </p>
-            </div>
 
             <div className="grid gap-3">
               {branches.map((branch) => (
@@ -456,15 +480,10 @@ export default function Dashboard() {
             </div>
           </section>
 
-          <section>
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-adech-text">
-                Branch Editor
-              </h2>
-              <p className="mt-1 text-sm text-adech-text-muted">
-                Manage Subbranches and Color Tokens.
-              </p>
-            </div>
+          <section className="flex flex-col gap-2">
+            <h2 className="text-lg font-semibold text-adech-text">
+              Branch Editor
+            </h2>
 
             {selectedBranch ? (
               <DashboardBranchCard
@@ -490,6 +509,17 @@ export default function Dashboard() {
           </section>
         </div>
       )}
+    {deleteModalContent && (
+      <ConfirmModal
+        title={deleteModalContent.title}
+        message={deleteModalContent.message}
+        confirmLabel={deleteModalContent.confirmLabel}
+        isLoading={actionStatus === "loading"}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+      />
+    )}
     </div>
+
   );
 }

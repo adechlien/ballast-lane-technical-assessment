@@ -7,7 +7,7 @@ export default function Home() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="flex min-h-full items-center">
+    <div className="flex min-h-[calc(100vh-6rem)] items-center">
       <section className="grid w-full gap-8 lg:grid-cols-[1fr_26rem] lg:items-center">
         <div className="max-w-2xl">
 

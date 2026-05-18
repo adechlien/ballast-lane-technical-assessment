@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import AuthModal from "../auth/AuthModal";
 import Button from "../ui/Button";
-import { IconHome2, IconSearch, IconLogout2, IconLogin2, IconLayoutDashboard, IconUserPlus, IconLayoutSidebar } from '@tabler/icons-react';
+import { IconHome2, IconSearch, IconLogout2, IconLogin2, IconLayoutDashboard, IconUserPlus } from '@tabler/icons-react';
 
 export default function AppLayout() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -31,11 +31,7 @@ export default function AppLayout() {
               </div>
             </div>
 
-            {/* <Button variant="ghost" className="size-8">*/}
-            <button className="text-lg">
-              <IconLayoutSidebar />
-            </button>
-            {/* </Button>*/}
+
           </div>
 
           <nav className="grid gap-2">

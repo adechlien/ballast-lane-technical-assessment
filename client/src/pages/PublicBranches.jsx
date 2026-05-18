@@ -47,7 +47,7 @@ export default function PublicBranches() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-h-[calc(100vh-6rem)] justify-center flex-col gap-6">
       <div className="flex flex-col items-start gap-2">
         <h1 className="text-3xl font-semibold text-adech-text">
           Public Branches

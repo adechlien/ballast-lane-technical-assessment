@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IconCirclePlus, IconEdit, IconTrash } from "@tabler/icons-react";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
 import ColorTokenForm from "./ColorTokenForm";
@@ -26,25 +27,52 @@ export default function ColorTokenList({
     setEditingTokenId(null);
   }
 
-  return (
-    <div className="mt-4 border-t border-adech-border pt-4">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h5 className="text-sm font-semibold text-adech-text">
-            Color Tokens
-          </h5>
-          <p className="mt-1 text-xs text-adech-text-muted">
-            Reusable color values inside this Subbranch.
-          </p>
-        </div>
+  function getReadableTokenLabel(token) {
+    if (token.usage) return token.usage;
 
-        <Button
-          variant="secondary"
+    return token.name
+      .replace(/^adech-/, "")
+      .replaceAll("-", " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+  }
+
+  function getTextColor(hex) {
+    const value = hex?.replace("#", "");
+
+    if (!value || ![3, 6].includes(value.length)) {
+      return "#0b1020";
+    }
+
+    const fullHex =
+      value.length === 3
+        ? value
+            .split("")
+            .map((char) => char + char)
+            .join("")
+        : value;
+
+    const red = parseInt(fullHex.slice(0, 2), 16);
+    const green = parseInt(fullHex.slice(2, 4), 16);
+    const blue = parseInt(fullHex.slice(4, 6), 16);
+
+    const brightness = (red * 299 + green * 587 + blue * 114) / 1000;
+
+    return brightness > 150 ? "#10172a" : "#f8fafc";
+  }
+
+  return (
+    <div className="mt-4">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        {!showCreateForm &&
+        <Button className="flex gap-2"
+          variant="primary"
           onClick={() => setShowCreateForm((current) => !current)}
           disabled={isBusy}
         >
-          {showCreateForm ? "Close" : "Add Token"}
+          <IconCirclePlus stroke={2} />
+          <span className="text-sm">Add Token</span>
         </Button>
+        }
       </div>
 
       {showCreateForm && (
@@ -69,60 +97,74 @@ export default function ColorTokenList({
       )}
 
       {colorTokens.length === 0 && (
-        <div className="rounded-xl border border-adech-border bg-adech-bg-ink/40 p-4">
           <p className="text-sm text-adech-text-muted">
             This Subbranch has no Color Tokens yet.
           </p>
-        </div>
       )}
 
       {colorTokens.length > 0 && (
-        <div className="grid gap-3">
-          {colorTokens.map((token) => (
-            <div
-              key={token.id}
-              className="grid gap-3 rounded-xl border border-adech-border bg-adech-bg-ink/40 p-3 md:grid-cols-[4rem_1fr_auto]"
-            >
-              <div
-                className="h-14 rounded-lg border border-adech-border"
-                style={{ backgroundColor: token.value }}
-              />
+        <div className="overflow-hidden rounded-xl border border-adech-border">
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: `repeat(${colorTokens.length}, minmax(11rem, 1fr))`,
+            }}
+          >
+            {colorTokens.map((token) => {
+              const textColor = getTextColor(token.value);
 
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-medium text-adech-text">{token.name}</p>
-
-                  <span className="rounded-full border border-adech-border bg-adech-surface px-2 py-1 text-xs text-adech-text-soft">
-                    {token.value}
-                  </span>
-                </div>
-
-                {token.usage && (
-                  <p className="mt-1 text-sm leading-6 text-adech-text-muted">
-                    {token.usage}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex flex-wrap gap-2 md:justify-end">
-                <Button
-                  variant="secondary"
-                  onClick={() => setEditingTokenId(token.id)}
-                  disabled={isBusy}
+              return (
+                <article
+                  key={token.id}
+                  className="group relative min-h-32 border-r border-black/10 p-3 last:border-r-0"
+                  style={{
+                    backgroundColor: token.value,
+                    color: textColor,
+                  }}
                 >
-                  Edit
-                </Button>
+                  <div className="flex h-full min-h-28 flex-col justify-between">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="line-clamp-1 text-xs opacity-70">
+                        {token.name}
+                      </p>
 
-                <Button
-                  variant="danger"
-                  onClick={() => onDelete(subbranch.id, token.id)}
-                  disabled={isBusy}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          ))}
+                      <div className="flex gap-2 opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
+                        <button
+                          type="button"
+                          onClick={() => setEditingTokenId(token.id)}
+                          disabled={isBusy}
+                          className="rounded-lg cursor-pointer"
+                          aria-label={`Edit ${token.name}`}
+                        >
+                          <IconEdit size={15} />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => onDelete(subbranch.id, token.id)}
+                          disabled={isBusy}
+                          className="rounded-lg cursor-pointer"
+                          aria-label={`Delete ${token.name}`}
+                        >
+                          <IconTrash size={15} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-end justify-between gap-3">
+                      <p className="text-xs font-medium opacity-80">
+                        {token.value}
+                      </p>
+
+                      <p className="line-clamp-1 text-right text-sm font-medium">
+                        {getReadableTokenLabel(token)}
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
