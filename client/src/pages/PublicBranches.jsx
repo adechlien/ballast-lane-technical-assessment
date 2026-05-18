@@ -1,31 +1,51 @@
-import Card from "../components/ui/Card";
+import { useEffect, useState } from "react";
+import BranchCard from "../components/branches/BranchCard";
+import ErrorMessage from "../components/ui/ErrorMessage";
 import Input from "../components/ui/Input";
-
-const placeholderBranches = [
-  {
-    name: "Superior",
-    slug: "superior",
-    description:
-      "The main Branch in Adech Themes, composed of cold and introspective Subbranches.",
-    subbranches: ["Boulevard", "Venomous", "Swamp"],
-  },
-  {
-    name: "Boulevard",
-    slug: "boulevard",
-    description:
-      "The city, distance, and the quiet loneliness that can exist even in a crowded world.",
-    subbranches: ["4 Color Tokens"],
-  },
-  {
-    name: "Swamp",
-    slug: "swamp",
-    description:
-      "The calm, breathing space, and the quiet strength of staying with yourself.",
-    subbranches: ["3 Color Tokens"],
-  },
-];
+import LoadingState from "../components/ui/LoadingState";
+import { getPublicBranches } from "../services/publicBranchService";
 
 export default function PublicBranches() {
+  const [branches, setBranches] = useState([]);
+  const [search, setSearch] = useState("");
+  const [submittedSearch, setSubmittedSearch] = useState("");
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadBranches() {
+      try {
+        setStatus("loading");
+        setError("");
+
+        const data = await getPublicBranches(submittedSearch);
+
+        if (!ignore) {
+          setBranches(data.branches || []);
+          setStatus("success");
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError(err.message);
+          setStatus("error");
+        }
+      }
+    }
+
+    loadBranches();
+
+    return () => {
+      ignore = true;
+    };
+  }, [submittedSearch]);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    setSubmittedSearch(search);
+  }
+
   return (
     <div>
       <div className="mb-8 grid gap-5 lg:grid-cols-[1fr_22rem] lg:items-end">
@@ -42,42 +62,37 @@ export default function PublicBranches() {
           </p>
         </div>
 
-        <Input placeholder="Search public Branches..." />
+        <form onSubmit={handleSubmit}>
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search public Branches..."
+          />
+        </form>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {placeholderBranches.map((branch) => (
-          <Card key={branch.slug} className="p-5">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs text-adech-text-muted">Public Branch</p>
-                <h2 className="mt-1 text-xl font-semibold text-adech-text">
-                  {branch.name}
-                </h2>
-              </div>
+      {status === "loading" && <LoadingState message="Loading public Branches..." />}
 
-              <span className="rounded-full border border-adech-border bg-adech-surface px-3 py-1 text-xs text-adech-text-soft">
-                Published
-              </span>
-            </div>
+      {status === "error" && <ErrorMessage message={error} />}
 
-            <p className="text-sm leading-6 text-adech-text-muted">
-              {branch.description}
-            </p>
+      {status === "success" && branches.length === 0 && (
+        <div className="rounded-2xl border border-adech-border bg-adech-surface/70 p-6">
+          <h2 className="text-lg font-semibold text-adech-text">
+            No public Branches found
+          </h2>
+          <p className="mt-2 text-sm text-adech-text-muted">
+            Try a different search or publish a Branch from your dashboard.
+          </p>
+        </div>
+      )}
 
-            <div className="mt-5 flex flex-wrap gap-2">
-              {branch.subbranches.map((subbranch) => (
-                <span
-                  key={subbranch}
-                  className="rounded-full border border-adech-border bg-adech-bg-deep/70 px-3 py-1 text-xs text-adech-text-muted"
-                >
-                  {subbranch}
-                </span>
-              ))}
-            </div>
-          </Card>
-        ))}
-      </div>
+      {status === "success" && branches.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {branches.map((branch) => (
+            <BranchCard key={branch.id} branch={branch} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

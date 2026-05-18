@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import PublicBranches from "./pages/PublicBranches";
+import PublicBranchDetail from "./pages/PublicBranchDetail";
 import Register from "./pages/Register";
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "branches/:slug",
+        element: <PublicBranchDetail />,
       },
     ],
   },

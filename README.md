@@ -19,23 +19,31 @@ npm install
 
 Create a `.env` file based on the `.env.example` file:
 
+```bash
 cp .env.example .env
+```
 
 The `.env` file should include:
 
+```txt
 PORT=3000
 DATABASE_URL="file:./dev.db"
 JWT_SECRET="your-secret-key"
+```
 
 ### Database
 
 Run the database migrations:
 
+```bash
 npx prisma migrate dev
+```
 
 Open Prisma Studio:
 
+```bash
 npx prisma studio
+```
 
 ### Development server
 
