@@ -356,3 +356,32 @@ DELETE /api/me/subbranches/:subbranchId/tokens/:tokenId
 * Only the owner of the parent Branch can create, edit, or delete Color Tokens.
 * Color Token values must be valid hexadecimal colors.
 * Color Token names must be unique inside the same Subbranch.
+
+## Testing
+
+The backend uses Vitest and Supertest for API tests.
+
+Prepare the test database:
+
+```bash
+npm run test:prepare
+```
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+The tests cover:
+
+- User registration.
+- User login.
+- Current authenticated user.
+- Protected Branch creation.
+- Branch ownership rules.
+- Branch publishing rules.
+- Subbranch creation.
+- Color Token creation.
+- Color Token validation.
+- Duplicate Color Token names inside the same Subbranch.
