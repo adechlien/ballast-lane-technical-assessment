@@ -9,6 +9,7 @@
     "start": "node src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "test:prepare": "cross-env DATABASE_URL=file:./test.db prisma migrate deploy",
     "test": "cross-env NODE_ENV=test DATABASE_URL=file:./test.db JWT_SECRET=test-secret vitest run",

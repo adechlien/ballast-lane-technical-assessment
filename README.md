@@ -4,462 +4,177 @@ Adechen is a full-stack web application for creating, managing, and publishing d
 
 The project is based on the structure used in Adech Themes, where a Branch represents a visual direction, each Branch contains Subbranches, and each Subbranch contains reusable Color Tokens.
 
-## Backend Setup
+## Project Overview
 
-The backend uses Node.js, Express, Prisma 6, and SQLite.
+Adechen's goal was to create a complete full-stack application with authentication, persistent data storage, protected CRUD operations, public browsing, testing, and documentation.
 
-### Install dependencies
-
-Go to the server folder and install the backend dependencies:
-
-cd server
-npm install
-
-### Environment variables
-
-Create a `.env` file based on the `.env.example` file:
-
-```bash
-cp .env.example .env
-```
-
-The `.env` file should include:
+The main domain model follows this structure:
 
 ```txt
-PORT=3000
-DATABASE_URL="file:./dev.db"
-JWT_SECRET="your-secret-key"
+Branch
+└── Subbranch
+    └── Color Token
 ```
 
-### Database
+A Branch represents a complete visual direction.  
+A Subbranch represents a palette inside that Branch.  
+A Color Token represents a reusable hexadecimal color value.
 
-Run the database migrations:
+## Tech Stack
+
+### Frontend
+
+- React
+- Vite
+- React Router
+- Tailwind CSS
+- Adech Themes Superior
+- Tabler Icons
+
+### Backend
+
+- Node.js
+- Express
+- Prisma 6
+- SQLite
+- JWT authentication
+- bcrypt password hashing
+
+### Testing
+
+- Vitest
+- Supertest
+
+### Development Tooling
+
+- Concurrently
+- Root-level npm scripts
+- Automated local environment setup
+
+## Quick Start
+
+From the root, install all dependencies:
 
 ```bash
-npx prisma migrate dev
+npm run install:all
 ```
 
-Open Prisma Studio:
+Then run the full application:
 
 ```bash
-npx prisma studio
+npm run abracadabra
 ```
 
-### Development server
+This command will:
 
-Run the development server:
+- Create `server/.env` and `client/.env` if they do not exist.
+- Prepare the test database.
+- Run the backend test suite.
+- Generate the Prisma Client.
+- Apply database migrations.
+- Start the Express backend.
+- Start the Vite frontend.
 
-npm run dev
+If the tests fail, the application will not start.
 
-The API should be available at:
+The backend will run at:
 
-[http://localhost:3000](http://localhost:3000)
+```txt
+http://localhost:3000
+```
+
+The frontend will run at:
+
+```txt
+http://localhost:5173
+```
 
 ### Health Check
 
+```txt
 GET /health
+```
 
 Example response:
 
+```json
 {
-"status": "ok",
-"service": "adechen-api"
+  "status": "ok",
+  "service": "adechen-api"
 }
+```
 
-## Backend API
+## Running the Full Application Manually
 
-### Authentication Endpoints
+If you do not want to use `npm run abracadabra`, open two terminals.
 
-POST /api/auth/register
-POST /api/auth/login
-GET /api/auth/me
+Terminal 1:
 
-### Register
+```bash
+cd server
+npm run dev
+```
 
-Creates a new user account.
+Terminal 2:
 
-Endpoint:
+```bash
+cd client
+npm run dev
+```
 
-POST /api/auth/register
+Then open:
 
-Example request body:
-
-{
-"name": "Alejandro",
-"email": "[alejandro@example.com](mailto:alejandro@example.com)",
-"password": "password123"
-}
-
-Example response:
-
-{
-"user": {
-"id": "user_id",
-"name": "Alejandro",
-"email": "[alejandro@example.com](mailto:alejandro@example.com)"
-},
-"token": "jwt_token"
-}
-
-### Login
-
-Authenticates an existing user.
-
-Endpoint:
-
-POST /api/auth/login
-
-Example request body:
-
-{
-"email": "[alejandro@example.com](mailto:alejandro@example.com)",
-"password": "password123"
-}
-
-Example response:
-
-{
-"user": {
-"id": "user_id",
-"name": "Alejandro",
-"email": "[alejandro@example.com](mailto:alejandro@example.com)"
-},
-"token": "jwt_token"
-}
-
-### Current User
-
-Returns the authenticated user.
-
-Endpoint:
-
-GET /api/auth/me
-
-Protected endpoints require a Bearer token:
-
-Authorization: Bearer <token>
-
-Example response:
-
-{
-"user": {
-"id": "user_id",
-"name": "Alejandro",
-"email": "[alejandro@example.com](mailto:alejandro@example.com)"
-}
-}
-
-If no token is provided, the API returns:
-
-{
-"message": "Authentication token is required."
-}
-
-## Branch Endpoints
-
-These endpoints require a Bearer token:
-
-Authorization: Bearer <token>
-
-Available endpoints:
-
-GET /api/me/branches
-POST /api/me/branches
-PATCH /api/me/branches/:id
-DELETE /api/me/branches/:id
-PATCH /api/me/branches/:id/publish
-PATCH /api/me/branches/:id/unpublish
-
-### Create Branch
-
-Creates a new private Branch owned by the authenticated user.
-
-Endpoint:
-
-POST /api/me/branches
-
-Example request body:
-
-{
-"name": "Superior",
-"description": "Main theme in Adech Themes.",
-"mood": "Cold, calm, introspective"
-}
-
-Example response:
-
-{
-"branch": {
-"id": "branch_id",
-"name": "Superior",
-"slug": "superior",
-"description": "Main theme in Adech Themes.",
-"mood": "Cold, calm, introspective",
-"isPublic": false,
-"ownerId": "user_id",
-"subbranches": []
-}
-}
-
-### List Own Branches
-
-Returns all Branches owned by the authenticated user.
-
-Endpoint:
-
-GET /api/me/branches
-
-### Update Branch
-
-Updates an owned Branch.
-
-Endpoint:
-
-PATCH /api/me/branches/:id
-
-Example request body:
-
-{
-"description": "Superior is the main Branch inside the Adech Themes ecosystem.",
-"mood": "Cold, calm, introspective, structured"
-}
-
-### Delete Branch
-
-Deletes an owned Branch.
-
-Endpoint:
-
-DELETE /api/me/branches/:id
-
-### Publish Branch
-
-Publishes an owned Branch.
-
-Endpoint:
-
-PATCH /api/me/branches/:id/publish
-
-### Unpublish Branch
-
-Unpublishes an owned Branch.
-
-Endpoint:
-
-PATCH /api/me/branches/:id/unpublish
-
-### Branch Business Rules
-
-* Only authenticated users can create Branches.
-* Only the owner of a Branch can edit, delete, publish, or unpublish it.
-* A Branch cannot be published unless it has at least one Subbranch.
-
-## Subbranch Endpoints
-
-These endpoints require a Bearer token:
-
-Authorization: Bearer <token>
-
-Available endpoints:
-
-POST /api/me/branches/:branchId/subbranches
-PATCH /api/me/branches/:branchId/subbranches/:subbranchId
-DELETE /api/me/branches/:branchId/subbranches/:subbranchId
-
-### Create Subbranch
-
-Creates a new Subbranch inside an owned Branch.
-
-Endpoint:
-
-POST /api/me/branches/:branchId/subbranches
-
-Example request body:
-
-{
-  "name": "Boulevard",
-  "description": "The city, distance, and the quiet loneliness that can exist even in a crowded world."
-}
-
-### Update Subbranch
-
-Updates a Subbranch inside an owned Branch.
-
-Endpoint:
-
-PATCH /api/me/branches/:branchId/subbranches/:subbranchId
-
-Example request body:
-
-{
-  "description": "The city, distance, and quiet urban loneliness inside the Superior Branch."
-}
-
-### Delete Subbranch
-
-Deletes a Subbranch inside an owned Branch.
-
-Endpoint:
-
-DELETE /api/me/branches/:branchId/subbranches/:subbranchId
-
-### Subbranch Business Rules
-
-- Only the owner of a Branch can create Subbranches inside it.
-- Only the owner of a Branch can edit or delete its Subbranches.
-- A Subbranch slug must be unique inside its parent Branch.
-
-## Color Token Endpoints
-
-These endpoints require a Bearer token:
-
-Authorization: Bearer <token>
-
-Available endpoints:
-
-POST /api/me/subbranches/:subbranchId/tokens
-PATCH /api/me/subbranches/:subbranchId/tokens/:tokenId
-DELETE /api/me/subbranches/:subbranchId/tokens/:tokenId
-
-### Create Color Token
-
-Creates a new Color Token inside a Subbranch that belongs to an owned Branch.
-
-Endpoint:
-
-POST /api/me/subbranches/:subbranchId/tokens
-
-Example request body:
-
-{
-"name": "adech-boulevard-1",
-"value": "#C7DCFF",
-"usage": "Used for soft backgrounds and calm interface surfaces."
-}
-
-### Update Color Token
-
-Updates a Color Token inside a Subbranch that belongs to an owned Branch.
-
-Endpoint:
-
-PATCH /api/me/subbranches/:subbranchId/tokens/:tokenId
-
-Example request body:
-
-{
-"usage": "Used for primary calm backgrounds in Boulevard interfaces."
-}
-
-### Delete Color Token
-
-Deletes a Color Token inside a Subbranch that belongs to an owned Branch.
-
-Endpoint:
-
-DELETE /api/me/subbranches/:subbranchId/tokens/:tokenId
-
-### Color Token Business Rules
-
-* Only the owner of the parent Branch can create, edit, or delete Color Tokens.
-* Color Token values must be valid hexadecimal colors.
-* Color Token names must be unique inside the same Subbranch.
+```txt
+http://localhost:5173
+```
 
 ## Testing
 
 The backend uses Vitest and Supertest for API tests.
 
-Prepare the test database:
-
-```bash
-npm run test:prepare
-```
-
-Run the test suite:
+You can run tests from the root:
 
 ```bash
 npm test
 ```
 
+Or from the server folder:
+
+```bash
+cd server
+npm run test:prepare
+npm test
+```
+
+The `npm run abracadabra` command also runs the backend test suite before starting the application.
+
 The tests cover:
 
 - User registration.
+- Duplicate email validation.
 - User login.
 - Current authenticated user.
 - Protected Branch creation.
 - Branch ownership rules.
 - Branch publishing rules.
+- Public Branch listing.
+- Public Branch detail by slug.
+- Private Branch visibility rules.
 - Subbranch creation.
 - Color Token creation.
 - Color Token validation.
 - Duplicate Color Token names inside the same Subbranch.
 
-## Public Branch Endpoints
+## Focus Areas
 
-These endpoints do not require authentication.
+This project focuses mainly on Backend Focus and Frontend Focus.
 
-Available endpoints:
+Backend Focus is covered through authentication, protected routes, input validation, ownership rules, public/private resource access, business rules, filtering, environment variables, and a health check endpoint.
 
-GET /api/branches
-GET /api/branches/:slug
+Frontend Focus is covered through a component-based React architecture, authentication modal, protected dashboard, loading and error states, custom confirmation modal, responsive layouts, and Adech Themes Superior styling.
 
-### List Public Branches
+## Additional Documentation
 
-Returns all public Branches.
-
-Endpoint:
-
-GET /api/branches
-
-Optional search query:
-
-GET /api/branches?search=Superior
-
-### Get Public Branch by Slug
-
-Returns a public Branch by its slug.
-
-Endpoint:
-
-GET /api/branches/:slug
-
-Example:
-
-GET /api/branches/superior
-
-### Public Branch Business Rules
-
-* Visitors can only see Branches where `isPublic` is true.
-* Private Branches are not returned by public endpoints.
-
-## Frontend
-
-The frontend uses React, Vite, Tailwind CSS, React Router, and Adech Themes Superior.
-
-### Setup
-
-Go to the client folder:
-
-```bash
-cd client
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-### Environment Variables
-
-Create a `.env` file in the client folder based on the `.env.example` file:
-
-```bash
-cp .env.example .env
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
+- `USER_STORY.md` explains the product idea, main user story, entities, scope and business rules.
+- `ARCHITECTURE.md` explains the technical architecture and separation of responsibilities.
+- `AGENTIC.md` documents the use of AI during the development process.
