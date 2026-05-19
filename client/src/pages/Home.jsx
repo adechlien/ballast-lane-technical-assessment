@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import { useAuth } from "../context/AuthContext";
+import { IconChevronRight } from "@tabler/icons-react";
+
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -36,20 +38,20 @@ export default function Home() {
         <Card className="p-5">
           <div className="mb-5">
             <p className="text-xs text-adech-text-muted">Structure</p>
-            <h2 className="mt-1 text-xl font-semibold text-adech-text">
-              Branch → Subbranch → Color Token
+            <h2 className="flex items-center mt-1 text-lg font-semibold text-adech-text">
+              Branch <IconChevronRight /> Subbranch <IconChevronRight /> Color Token
             </h2>
           </div>
 
           <div className="grid gap-4">
-            <div className="rounded-2xl border border-adech-border bg-adech-bg-deep/60 p-4">
+            <div className="bg-adech-bg-deep/60 p-4">
               <p className="text-sm font-semibold text-adech-text">Superior</p>
               <p className="mt-1 text-sm text-adech-text-muted">
                 A Branch defines a visual direction.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-adech-border bg-adech-bg-deep/60 p-4">
+            <div className="bg-adech-bg-deep/60 p-4">
               <p className="text-sm font-semibold text-adech-text">
                 Boulevard, Venomous, Swamp
               </p>
